@@ -29,13 +29,14 @@ def collect_ngrams(in_list, tokens = True, n = 1):
     return ngrams
 
 # Open txt file and tokenize individual words
-file = open('puzzle_text', 'r')
+file = open('training_text', 'r')
 file_text = file.read()
 file_ngrams = collect_ngrams(file_text)
 # Index tracker
 key = -1
 # Word data in the form of dictionary
 words = {}
+final_word = ""
 
 # Add all tokens to dictionary
 for value in file_ngrams:
@@ -47,6 +48,10 @@ for value in file_ngrams:
     if (key > -1):
         words[file_ngrams[key]].append(value)
     key += 1
+    final_word = value
+
+# Add first element to value list of final key to make sure generation never stops
+words[final_word].append(file_ngrams[0])
 
 # Open json file for word data
 with open('word_data.json', 'w') as outfile:
@@ -56,19 +61,19 @@ with open('word_data.json', 'w') as outfile:
 def generate_str(num):
     sentence = ""
 
-    # Get random word
+    # Get random key
     random_key = random.choice(list(words.keys()))
-    #
-    while(not random_key[0].isupper() or list(words.keys()).index(random_key) > len(words.keys()) - num):
-        random_key = random.choice(list(words.keys()))
+    random_value = random_key
 
-    for num in range(num):
-        num += 1
-        sentence += random_key + " "
-        if (list(words.keys()).index(random_key) == len(words.keys()) - 1):
-            break
-        else:
-            random_value = random.choice(words[random_key])
-            random_key = random_value
+    # Make sure the initial key is uppercase for natural structure
+    while (not random_value[0].isupper()):
+        random_key = random.choice(list(words.keys()))
+        random_value = random_key
+
+    # Append random values to return string
+    for i in range(num):
+        sentence += random_value + " "
+        random_key = random.choice(words[random_value])
+        random_value = random_key
 
     return sentence

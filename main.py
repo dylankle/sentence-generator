@@ -1,4 +1,8 @@
 from word_generator import*
 
-choice = input("how many words do you want to generate?\n>>> ")
-print((generate_str(int(choice))))
+choice = 2001
+
+while (choice > 2000):
+    choice = int(input("How many words do you want to generate? [ Less than 2000 :< ]\n>>> "))
+
+print((generate_str(choice)))
